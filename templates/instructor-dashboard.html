@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Instructor Dashboard - AttendanceLink</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        /* Tabs ke liye basic CSS */
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Nav tabs active button style */
+        .nav-tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="dashboard-nav">
+                <div class="dashboard-title">
+                    <h1>Instructor</h1>
+                    <p>Welcome back, <span id="instructorName">{{ username }}</span></p>
+                </div>
+                <div class="nav-buttons">
+                 
+                    <button class="btn btn-primary btn-small" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-content">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-number" id="totalGroups">0</div>
+                        <div class="stat-label">Total Groups</div>
+                    </div>
+                    <div class="stat-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-number" id="totalStudents">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-icon green">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-number" id="overallAttendance">0%</div>
+                        <div class="stat-label">Overall Attendance</div>
+                    </div>
+                    <div class="stat-icon purple">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-number" id="activeLinks">0</div>
+                        <div class="stat-label">Active Links</div>
+                    </div>
+                    <div class="stat-icon orange">
+                        <i class="fas fa-link"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group-wise Attendance Overview -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Group-wise Attendance Overview</h3>
+            </div>
+            <div class="grid grid-cols-3" id="groupAttendanceGrid">
+                <!-- Group attendance cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard', event)">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="nav-tab" onclick="showTab('groups', event)">
+                <i class="fas fa-users"></i>
+                Groups
+            </button>
+            <button class="nav-tab" onclick="showTab('students', event)">
+                <i class="fas fa-user-graduate"></i>
+                Students
+            </button>
+           
+        </div>
+
+       <!-- Tab Content -->
+<div id="dashboard" class="tab-pane active">
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="card-title">Recent Activity</h3>
+            <!-- Button to manually refresh/load daily attendance report -->
+            <button class="btn btn-primary btn-small" onclick="loadDailyAttendanceReport()" style="padding: 0.3rem 0.8rem;">
+                Refresh Attendance Report
+            </button>
+        </div>
+        <div id="recentActivity">
+            <div class="text-center" style="padding: 3rem;">
+                <i class="fas fa-clock" style="font-size: 4rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                <h4 style="color: var(--gray-600); margin-bottom: 0.5rem;">No Recent Activity</h4>
+                <p style="color: var(--gray-500); margin: 0;">Student registrations and attendance will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Attendance Report Container -->
+    <div id="dailyAttendanceReportContainer" style="margin-top: 2rem;">
+        <!-- Daily attendance report will dynamically load here -->
+    </div>
+</div>
+
+
+        <div id="groups" class="tab-pane">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="card-title">Manage Groups</h3>
+                <button class="btn btn-primary" onclick="showCreateGroupModal()">
+                    <i class="fas fa-plus"></i>
+                    Create Group
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3" id="groupsGrid">
+                <!-- Groups will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div id="students" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Student Management</h3>
+                    <div class="form-group" style="margin-bottom: 0; max-width: 300px;">
+                        <input type="text" class="form-input" placeholder="Search students..." id="studentSearch" oninput="filterStudents()" />
+                    </div>
+                </div>
+                <div id="studentsTable">
+                    <!-- Students table will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="links" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Attendance & Registration Links</h3>
+                </div>
+                <div id="linksContainer">
+                    <!-- Links will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div id="createGroupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Group</h3>
+                <button class="modal-close" onclick="closeModal('createGroupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="handleCreateGroup(event)">
+                <div class="form-group">
+                    <label class="form-label">Group Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Computer Science - 101" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-input" placeholder="Brief description of the group" />
+                </div>
+                <div class="grid grid-cols-3" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-input" placeholder="CS" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Class</label>
+                        <input type="text" class="form-input" placeholder="101" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Section</label>
+                        <input type="text" class="form-input" placeholder="A" required />
+                    </div>
+                </div>
+
+                
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Create Group
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Link Settings Modal -->
+    <div id="linkSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Generate Link</h3>
+                <button class="modal-close" onclick="closeModal('linkSettingsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="generateLink(event)">
+                <input type="hidden" id="linkGroupId" />
+                <input type="hidden" id="linkType" />
+
+                <div class="form-group">
+                    <label class="form-label">Duration (minutes)</label>
+                    <select class="form-select" id="linkDuration">
+                        <option value="30">30 minutes</option>
+                        <option value="60" selected>60 minutes</option>
+                        <option value="120">2 hours</option>
+                        <option value="240">4 hours</option>
+                        <option value="480">8 hours</option>
+                        <option value="1440">24 hours</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-link"></i>
+                    Generate Link
+                </button>
+            </form>
+        </div>
+    </div>
+<script> 
+    async function loadGroups() {
+    const container = document.getElementById('groupsGrid');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/get-groups');
+        if (!response.ok) throw new Error('Failed to fetch groups');
+        const data = await response.json();
+        const groups = data.groups || [];
+
+        container.innerHTML = groups.map(group => `
+            <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h4>${group.name}</h4>
+                    <span class="badge badge-primary">${group.studentCount} students</span>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <p style="margin-bottom: 0.5rem; color: var(--gray-600);">${group.description || ''}</p>
+                    <div style="font-size: 0.875rem; color: var(--gray-500);">
+                        <p style="margin: 0;">Department: ${group.department}</p>
+                        <p style="margin: 0;">Class: ${group.class} | Section: ${group.section}</p>
+                    </div>
+                </div>
+                <div style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 500;">Attendance Rate</span>
+                        <span style="font-size: 1.125rem; font-weight: 700; color: var(--success);">${group.attendancecount || 0}%</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary btn-small" onclick="copyToClipboard('${window.location.origin}/register/${group.registration_link}')"
+                        style="flex: 1;">
+                        <i class="fas fa-copy"></i> Copy Registration Link
+                    </button>
+                    <button class="btn btn-primary btn-small" onclick="copyToClipboard('${window.location.origin}/attendance/${group.attendance_link}')"
+                        style="flex: 1;">
+                        <i class="fas fa-copy"></i> Copy Attendance Link
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.error('Error loading groups:', err);
+        container.innerHTML = '<p style="color:red;">Failed to load groups.</p>';
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Link copied to clipboard:\n' + text);
+    }).catch(() => {
+        alert('Failed to copy the link.');
+    });
+}
+
+window.onload = () => {
+    loadGroups();
+};
+
+// Tab switch handler (if needed)
+function showTab(tabId, evt) {
+    evt.preventDefault();
+    document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+}
+async function loadDailyAttendanceReport() {
+    const container = document.getElementById('dailyAttendanceReportContainer');
+    if (!container) return;
+    container.innerHTML = 'Loading daily attendance report...';
+
+    try {
+        const response = await fetch('/daily-attendance-report');
+        if (!response.ok) throw new Error('Failed to fetch daily attendance report');
+        const report = await response.json();
+
+        if (report.length === 0) {
+            container.innerHTML = '<p>No attendance data available for today.</p>';
+            return;
+        }
+
+        container.innerHTML = report.map(group => `
+            <section style="margin-bottom: 2rem;">
+                <h4>Group: ${group.group_name} (Total: ${group.total_students}, Present: ${group.present_count})</h4>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Name</th><th>Student ID</th><th>Email</th><th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${group.present_students.map(student => `
+                            <tr>
+                                <td>${student.name}</td>
+                                <td>${student.student_id}</td>
+                                <td>${student.email}</td>
+                                <td>${student.phone}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </section>
+        `).join('');
+    } catch (error) {
+        container.innerHTML = '<p style="color:red;">Error loading daily attendance report.</p>';
+        console.error(error);
+    }
+}
+
+</script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

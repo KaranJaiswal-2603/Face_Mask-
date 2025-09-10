@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendanceLink - Face Recognition</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card" style="max-width: 500px;">
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center">
+                <div class="loading-spinner" style="margin: 0 auto 1rem;"></div>
+                <h3>Verifying Link...</h3>
+                <p>Please wait while we validate your access.</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" style="display: none;" class="text-center">
+                <div style="font-size: 4rem; color: var(--error); margin-bottom: 1rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Link Invalid or Expired</h3>
+                <p id="errorMessage">This link is no longer valid or has expired.</p>
+                <a href="index.html" class="btn btn-primary mt-3">
+                    <i class="fas fa-home"></i>
+                    Go to Home
+                </a>
+            </div>
+
+            <!-- Valid Link State -->
+            <div id="validLinkState" style="display: none;">
+                <!-- Header -->
+                <div class="auth-header">
+                    <div class="logo mb-3">
+                        <i class="fas fa-qrcode"></i>
+                        <h1>AttendanceLink</h1>
+                    </div>
+                    <h3 id="linkTitle">Student Registration</h3>
+                    <p id="linkDescription">Complete your registration with face scan</p>
+                </div>
+
+                <!-- Location Status -->
+                <div id="locationStatus" class="card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="loading-spinner" id="locationSpinner"></div>
+                        <i id="locationIcon" class="fas fa-map-marker-alt" style="font-size: 1.25rem; color: var(--primary); display: none;"></i>
+                        <div>
+                            <div style="font-weight: 600;" id="locationText">Verifying location...</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);" id="locationSubtext">Please enable location access</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Form (for registration links) -->
+                <div id="registrationForm" style="display: none;">
+                    <form onsubmit="handleRegistration(event)">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" placeholder="Enter your email" required>
+                        </div>
+                        <div id="customFieldsContainer">
+                            <!-- Custom fields will be populated by JavaScript -->
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;" disabled id="proceedButton">
+                            <i class="fas fa-arrow-right"></i>
+                            Proceed to Face Scan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Face Recognition Interface -->
+                <div id="faceRecognition" style="display: none;">
+                    <div class="face-scan-container">
+                        <div class="camera-container">
+                            <div class="camera-placeholder" id="cameraPlaceholder">
+                                <i class="fas fa-camera"></i>
+                                <p>Position your face in the frame</p>
+                                <small>Make sure you're in good lighting</small>
+                            </div>
+                            <video id="camera" style="width: 100%; height: 300px; object-fit: cover; display: none;" autoplay></video>
+                            <canvas id="canvas" style="display: none;"></canvas>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="margin-bottom: 1rem;">Instructions:</h4>
+                            <ul style="text-align: left; color: var(--gray-600); line-height: 1.8;">
+                                <li>Look directly at the camera</li>
+                                <li>Ensure good lighting on your face</li>
+                                <li>Remove any face coverings if possible</li>
+                                <li>Stay still during the scan</li>
+                            </ul>
+                        </div>
+
+                        <div class="scan-controls">
+                            <button class="scan-button" id="startCameraBtn" onclick="startCamera()">
+                                <i class="fas fa-camera"></i>
+                                Start Camera
+                            </button>
+                            <button class="scan-button" id="captureBtn" onclick="capturePhoto()" style="display: none;">
+                                <i class="fas fa-camera-retro"></i>
+                                Capture Photo
+                            </button>
+                            <button class="scan-button" id="processingBtn" style="display: none;" disabled>
+                                <div class="loading-spinner" style="width: 1rem; height: 1rem; border-width: 2px; margin-right: 0.5rem;"></div>
+                                Processing...
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success State -->
+                <div id="successState" style="display: none;" class="text-center">
+                    <div style="font-size: 4rem; color: var(--success); margin-bottom: 1rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 id="successTitle">Registration Successful!</h3>
+                    <p id="successMessage">Your face has been registered successfully.</p>
+                    <div id="successDetails" style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--border-radius); margin: 1rem 0;">
+                        <!-- Success details will be populated by JavaScript -->
+                    </div>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        Return Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Initialize link handler when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLinkHandler();
+        });
+    </script>
+</body>
+</html>

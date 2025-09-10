@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mark Attendance</title>
+</head>
+<body>
+  <h2>Mark Attendance</h2>
+  <video id="video" width="320" height="240" autoplay></video><br>
+  <button id="capture">Capture Photo</button>
+  <button id="submit">Submit Attendance</button>
+  <img id="capturedImg" style="display:none;" width="160" />
+
+  <script>
+    const video = document.getElementById('video');
+    const captureBtn = document.getElementById('capture');
+    const submitBtn = document.getElementById('submit');
+    const capturedImg = document.getElementById('capturedImg');
+    let capturedPhoto = null;
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; })
+      .catch(() => alert("Camera access denied"));
+
+    captureBtn.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      capturedPhoto = canvas.toDataURL('image/jpeg');
+      capturedImg.src = capturedPhoto;
+      capturedImg.style.display = 'block';
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      if (!capturedPhoto) {
+        alert("Please capture a photo first");
+        return;
+      }
+
+      try {
+        // Step 1: Identify student by face
+        const identifyResp = await fetch(window.location.origin + '/identify-student', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: capturedPhoto }),
+        });
+        const identifyData = await identifyResp.json();
+
+        if (identifyData.matched_students) {
+          if (identifyData.matched_students.length === 1) {
+            // Step 2: Single match found, mark attendance directly
+            const studentId = identifyData.matched_students[0].student_id;
+            const markResp = await fetch(window.location.origin + '/mark-attendance-confirm', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ student_id: studentId }),
+            });
+            const markData = await markResp.json();
+            alert(markData.message || markData.error);
+          } else {
+            // Multiple matches found: show user selection or alert
+            alert('Multiple students matched. Please contact your instructor.');
+          }
+        } else {
+          alert(identifyData.error || 'Face not recognized.');
+        }
+      } catch (error) {
+        alert("Error during attendance process.");
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>

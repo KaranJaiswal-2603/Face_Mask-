@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - AttendanceLink</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="dashboard">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="dashboard-nav">
+                <div class="dashboard-title">
+                    <h1>Student</h1>
+                    <p>Welcome back, <span id="studentName">{{ username }}</span></p>
+                </div>
+                <div class="nav-buttons">
+                    <div class="badge badge-primary">
+                        <span id="attendancePercentage">89.5</span>% Attendance
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-content">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="nav-tab" onclick="showTab('attendance')">
+                <i class="fas fa-calendar-check"></i>
+                Attendance
+            </button>
+            <button class="nav-tab" onclick="showTab('reports')">
+                <i class="fas fa-chart-line"></i>
+                Reports
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="dashboard" class="tab-pane active">
+            <!-- Stats Cards - Simplified -->
+            <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number text-primary" id="overallAttendance">89.5%</div>
+                            <div class="stat-label">Overall Attendance</div>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number" id="enrolledSubjects">4</div>
+                            <div class="stat-label">Enrolled Subjects</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject-wise Attendance -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Subject-wise Attendance</h3>
+                </div>
+                <div id="subjectAttendance">
+                    <!-- Subject attendance will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Recent Attendance -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Attendance</h3>
+                </div>
+                <div id="recentAttendance">
+                    <!-- Recent attendance records will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="attendance" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Attendance Records</h3>
+                    <div style="display: flex; gap: 1rem;">
+                        <select class="form-select" style="max-width: 200px;" id="subjectFilter" onchange="filterAttendance()">
+                            <option value="">All Subjects</option>
+                            <option value="CS-101-A">Computer Science</option>
+                            <option value="MATH-201-B">Mathematics</option>
+                            <option value="PHY-101-A">Physics</option>
+                            <option value="ENG-101-C">English</option>
+                        </select>
+                        <select class="form-select" style="max-width: 150px;" id="statusFilter" onchange="filterAttendance()">
+                            <option value="">All Status</option>
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="attendanceTable">
+                    <!-- Attendance table will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="reports" class="tab-pane">
+            <div class="grid grid-cols-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Monthly Attendance</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="monthlyChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Subject Comparison</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="subjectChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Attendance Summary</h3>
+                </div>
+                <div id="attendanceSummary">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

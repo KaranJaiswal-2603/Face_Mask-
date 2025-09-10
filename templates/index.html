@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendanceLink - Smart Attendance Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-qrcode"></i>
+                    <h1>AttendanceLink</h1>
+                </div>
+                <a href="{{ url_for('auth') }}" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2>Smart Attendance Management
+                        <span class="text-accent">Made Simple</span>
+                    </h2>
+                    <p>Revolutionary face recognition-based attendance system with location tracking, 
+                       group management, and real-time reporting for educational institutions.</p>
+                    <div class="hero-buttons">
+                        <a href="{{ url_for('auth') }}" class="btn btn-primary btn-large">
+                            <i class="fas fa-rocket"></i>
+                            Get Started Free
+                        </a>
+                        <a href="#features" class="btn btn-secondary btn-large">
+                            <i class="fas fa-play"></i>
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-placeholder">
+                        <i class="fas fa-camera"></i>
+                        <p>Face Recognition Technology</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h3>Powerful Features for Modern Education</h3>
+                <p>Everything you need to manage attendance efficiently with cutting-edge technology</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Face Recognition</h4>
+                    <p>Secure biometric attendance marking using advanced face recognition technology. 
+                       No more proxy attendance or manual processes.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4>Location Tracking</h4>
+                    <p>Automatic location verification within 1km radius ensures students are physically present 
+                       at the designated location during attendance.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Group Management</h4>
+                    <p>Organize students by class, section, and department. Create multiple groups 
+                       and manage them efficiently from one dashboard.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h4>Smart Links</h4>
+                    <p>Generate time-limited registration and attendance links that can be shared 
+                       via WhatsApp or other messaging platforms.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h4>Real-time Reports</h4>
+                    <p>Comprehensive attendance reports with analytics, search capabilities, 
+                       and subject-wise breakdowns for better insights.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Mobile Friendly</h4>
+                    <p>Fully responsive design works perfectly on all devices. 
+                       Students and instructors can access from anywhere.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h3>How It Works</h3>
+                <p>Simple 4-step process to revolutionize your attendance management</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Create Groups</h4>
+                        <p>Set up classes, sections, and departments. Configure custom registration fields.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Generate Links</h4>
+                        <p>Create time-limited registration and attendance links with custom duration.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Share & Register</h4>
+                        <p>Share links via WhatsApp. Students register with face scanning.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Track & Analyze</h4>
+                        <p>Monitor attendance in real-time with detailed reports and analytics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h3>Ready to Transform Your Attendance Management?</h3>
+                <p>Join thousands of educational institutions already using AttendanceLink</p>
+                <a href="{{ url_for('auth') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Trial
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-qrcode"></i>
+                    <span>AttendanceLink</span>
+                </div>
+                <p>&copy; 2025 AttendanceLink. Revolutionizing attendance management.</p>
+            </div>
+        </div>
+    </footer>
+
+     <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

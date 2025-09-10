@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - AttendanceLink</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+</head>
+<body>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <!-- Header -->
+      <div class="auth-header">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-small mb-3">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        <div class="logo mb-3">
+          <i class="fas fa-qrcode"></i>
+          <h1>AttendanceLink</h1>
+        </div>
+        <p>Join the future of attendance management</p>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button class="tab-button active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login" class="tab-content active">
+        <form action="{{ url_for('login') }}" method="POST" autocomplete="on">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" placeholder="Enter your email" required autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-input" placeholder="Enter your password" required autocomplete="current-password" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </button>
+        </form>
+        <p style="text-align:center; margin-top: -10px; margin-bottom: 15px;">
+    <a href="{{ url_for('reset_password_request') }}">Forgot Password?</a>
+  </p>
+        
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signup" class="tab-content">
+        <form action="{{ url_for('signup') }}" method="POST" autocomplete="on">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="username" class="form-input" placeholder="Enter your full name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" placeholder="Enter your email" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-input" placeholder="Create a password" required minlength="6" />
+          </div>
+
+          <!-- Role Selection -->
+          <div class="form-group">
+            <label class="form-label">Select Your Role</label>
+            <div class="role-selection">
+              <div class="role-option" onclick="document.getElementById('selectedRole').value='instructor'; activateRole(this)">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h4>Instructor</h4>
+                <p>Manage attendance and students</p>
+              </div>
+              <div class="role-option" onclick="document.getElementById('selectedRole').value='student'; activateRole(this)">
+                <i class="fas fa-user-graduate"></i>
+                <h4>Student</h4>
+                <p>Mark attendance and view reports</p>
+              </div>
+            </div>
+            <input type="hidden" id="selectedRole" name="role" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+        </form>
+        
+     
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(function(tab) {
+        tab.classList.remove('active');
+      });
+      document.getElementById(tabName).classList.add('active');
+
+      document.querySelectorAll('.tab-button').forEach(function(btn) {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.tab-button[onclick="switchTab('${tabName}')"]`).classList.add('active');
+    }
+
+    function activateRole(element) {
+      document.querySelectorAll('.role-option').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+
+    // Signup role validation
+    document.querySelector('#signup form').addEventListener('submit', function(e) {
+      if (!document.getElementById('selectedRole').value) {
+        e.preventDefault();
+        alert('Please select a role (Instructor or Student).');
+      }
+    });
+
+    
+  </script>
+</body>
+</html>

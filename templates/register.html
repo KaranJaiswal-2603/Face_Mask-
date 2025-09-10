@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Registration</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='RE.css') }}">
+  <style>
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  input {
+    width: 300px;
+    padding: 5px;
+    font-size: 1rem;
+  }
+  #photos img {
+    margin-top: 10px;
+    border: 1px solid #ccc;
+  }
+  button {
+    margin-top: 15px;
+    padding: 8px 12px;
+    font-size: 1rem;
+  }
+</style>
+
+</head>
+<body>
+  <h2>Register Your Face and Details</h2>
+
+  <form id="registrationForm">
+    <label>Name:</label>
+    <input type="text" id="name" required />
+
+    <label>Email ID:</label>
+    <input type="email" id="email" required />
+
+    <label>Student ID:</label>
+    <input type="text" id="studentId" required />
+
+    <label>Department:</label>
+    <input type="text" id="department" required />
+
+    <label>Phone Number:</label>
+    <input type="tel" id="phone" required />
+
+    <div style="margin-top:15px;">
+      <video id="video" width="320" height="240" autoplay></video><br>
+      <button type="button" id="capture">Capture Photo</button>
+    </div>
+
+    <div id="photos"></div>
+
+    <button type="submit">Submit Registration</button>
+  </form>
+
+  <script>
+    const video = document.getElementById('video');
+    const captureButton = document.getElementById('capture');
+    const photosDiv = document.getElementById('photos');
+    const registrationForm = document.getElementById('registrationForm');
+    let photos = [];
+
+    // Start webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; })
+      .catch(() => alert('Camera access denied'));
+
+    // Capture photo button
+    captureButton.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      const dataURL = canvas.toDataURL('image/jpeg');
+      photos.push(dataURL);
+      const img = document.createElement('img');
+      img.src = dataURL;
+      img.width = 160;
+      photosDiv.appendChild(img);
+    });
+
+    // On form submit
+    registrationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (photos.length === 0) {
+        alert('Please capture at least one photo.');
+        return;
+      }
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const studentId = document.getElementById('studentId').value.trim();
+      const department = document.getElementById('department').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!name || !email || !studentId || !department || !phone) {
+        alert('Please fill all the required fields.');
+        return;
+      }
+
+      const registrationLink = window.location.pathname.split('/').pop();
+
+      try {
+        const response = await fetch(`/attendance/register-face/${registrationLink}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            student_id: studentId,
+            department,
+            phone,
+            images: photos
+          })
+        });
+
+        const result = await response.json();
+        alert(result.message || result.error);
+
+        if(result.message){
+          // Clear form and photos after success
+          registrationForm.reset();
+          photos = [];
+          photosDiv.innerHTML = '';
+        }
+      } catch (e) {
+        alert('Registration failed due to network error.');
+      }
+    });
+  </script>
+</body>
+</html>
